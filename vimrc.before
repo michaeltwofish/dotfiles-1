@@ -1,0 +1,10 @@
+" disable a few janus-included plugins
+
+" using jshint instead
+call janus#disable_plugin('jslint')
+
+" don't need all the colors
+call janus#disable_plugin('sampler-pack')
+
+" enable a couple things:
+let mapleader=","

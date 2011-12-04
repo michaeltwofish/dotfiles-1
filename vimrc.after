@@ -1,3 +1,5 @@
+exec "runtime! plugin/**/*.vim"
+echomsg "loading custom .vimrc"
 " ----- janus overrides -----
 
 " set mapleader, so <Leader>-related stuff can be redefined
@@ -12,6 +14,7 @@ map <Leader>o :e <C-R>=expand("%:p:h") . "/" <CR>
 map <Leader>te :tabe <C-R>=expand("%:p:h") . "/" <CR>
 
 let NERDTreeIgnore=['\.pyc$', '\.rbc$', '\~$', '^tags$']
+let NERDTreeDirArrows=1
 
 " livin' on the edge!
 set noswapfile
@@ -24,7 +27,7 @@ set expandtab
 " wrap lines at convenient points
 set linebreak
 " reasonable textwidth (imo)
-set textwidth=120
+set textwidth=80
 
 " store lots of :cmdline history
 set history=1000
@@ -84,6 +87,9 @@ let g:CommandTMatchWindowAtTop=1
 
 " disable hammer warning messages (bleh)
 let g:HammerQuiet=1
+
+" disable delimitMate
+let g:loaded_delimitMate=1
 
 " easy escape
 imap jj <Esc>
@@ -145,6 +151,8 @@ set winheight=10
 set splitbelow
 " and to the right as well
 set splitright
+
+map <silent> <Leader>tb :TagbarOpen<CR>
 
 " strip leading tabs and trailing whitespace
 command Tr %s/\s\+$//ge | %s/\t/  /ge | nohlsearch

@@ -1,70 +1,42 @@
-def remove_plugin_task(name)
-  task(name).clear
-  task("#{name}:pull").clear
-  task("#{name}:install").clear
-  file(File.expand_path("tmp/#{name}") => "tmp").clear
-end
+# always_update_submodules
 
-def override_plugin_task(name, repo=nil, &block)
-  remove_plugin_task name
-  vim_plugin_task name, repo, &block
-end
+plugin "jshint", "https://github.com/wookiehangover/jshint.vim.git"
 
-def extend_plugin_task(name, &block)
-  task "#{name}:install" do
-    yield block
-  end
-end
-
-# don't want wycats' fork, i want the source
-override_plugin_task "nerdtree", "git://github.com/scrooloose/nerdtree.git"
-
-remove_plugin_task "jslint"
-vim_plugin_task "jshint", "https://github.com/wookiehangover/jshint.vim.git"
-
-vim_plugin_task "vim-ruby", "https://github.com/vim-ruby/vim-ruby.git"
-vim_plugin_task "ragtag", "git://github.com/tpope/vim-ragtag.git"
-vim_plugin_task "repeat", "git://github.com/tpope/vim-repeat.git"
-vim_plugin_task "liquid", "git://github.com/vim-ruby/vim-ruby.git"
-vim_plugin_task "ragel", "https://github.com/jayferd/ragel.vim.git"
-vim_plugin_task "scss", "https://github.com/cakebaker/scss-syntax.vim.git"
-vim_plugin_task "sinatra", "https://github.com/hallison/vim-ruby-sinatra.git"
-vim_plugin_task "less", "git://gist.github.com/369178.git"
-vim_plugin_task "camelcasemotion", "https://github.com/vim-scripts/camelcasemotion.git"
-vim_plugin_task "zencoding", "https://github.com/mattn/zencoding-vim.git"
-vim_plugin_task "session", "https://github.com/vim-scripts/session.vim--Odding.git"
-vim_plugin_task "delimitMate", "https://github.com/Raimondi/delimitMate.git"
-vim_plugin_task "css-color", "https://github.com/ap/vim-css-color.git" do
+plugin "vim-ruby", "https://github.com/vim-ruby/vim-ruby.git"
+plugin "ragtag", "git://github.com/tpope/vim-ragtag.git"
+plugin "repeat", "git://github.com/tpope/vim-repeat.git"
+plugin "liquid", "git://github.com/vim-ruby/vim-ruby.git"
+plugin "ragel", "https://github.com/jayferd/ragel.vim.git"
+plugin "scss", "https://github.com/cakebaker/scss-syntax.vim.git"
+plugin "sinatra", "https://github.com/hallison/vim-ruby-sinatra.git"
+plugin "less", "git://gist.github.com/369178.git"
+plugin "camelcasemotion", "https://github.com/vim-scripts/camelcasemotion.git"
+# plugin "zencoding", "https://github.com/mattn/zencoding-vim.git"
+plugin "session", "https://github.com/vim-scripts/session.vim--Odding.git"
+plugin "css-color", "https://github.com/ap/vim-css-color.git" do
   sh "cp after/syntax/{css,less}.vim"
   sh "cp after/syntax/{css,scss}.vim"
 end
-vim_plugin_task "jasmine", "https://github.com/claco/jasmine.vim.git"
+plugin "jasmine", "https://github.com/claco/jasmine.vim.git"
 
-vim_plugin_task "autotag", "https://github.com/vim-scripts/AutoTag.git"
 
-vim_plugin_task "tabmerge" do
+plugin "tabmerge" do
+  mkdir_p "plugin"
   sh "curl 'http://www.vim.org/scripts/download_script.php?src_id=8828' > plugin/Tabmerge.vim"
 end
 
-vim_plugin_task "html5-syntax",     "git://github.com/othree/html5-syntax.vim.git"
+plugin "html5", "git://github.com/othree/html5.vim.git"
+plugin "html5-syntax", "git://github.com/othree/html5-syntax.vim.git"
 
-vim_plugin_task "lesscss",          "git://gist.github.com/161047.git" do
-  FileUtils.cp "tmp/lesscss/less.vim", "syntax"
+plugin "lesscss", "git://gist.github.com/161047.git" do
+  mkdir_p "syntax"
+  cp "less.vim", "syntax"
 end
 
-vim_plugin_task "html5",            "git://github.com/othree/html5.vim.git" do
-  Dir.chdir "tmp/html5" do
-    sh "make install"
-  end
-end
+plugin "copy-as-rtf", "git://github.com/aniero/vim-copy-as-rtf.git"
 
-vim_plugin_task "copy-as-rtf", "git://github.com/aniero/vim-copy-as-rtf.git"
-
-vim_plugin_task "tagbar", "https://github.com/majutsushi/tagbar.git"
-
-# vim_plugin_task "bufexplorer",      "git://github.com/vim-scripts/bufexplorer.zip.git"
-
-override_plugin_task "molokai" do
+plugin "molokai" do
+  mkdir_p "colors"
   sh "curl https://raw.github.com/mrtazz/molokai.vim/master/colors/molokai.vim > colors/molokai.vim"
   File.open("colors/molokai.vim", "a") do |f|
     f.puts <<-overrides
@@ -80,11 +52,10 @@ override_plugin_task "molokai" do
   end
 end
 
-vim_plugin_task "tomorrow-night" do
-  sh "curl https://raw.github.com/ChrisKempson/Tomorrow-Theme/master/Vim/Tomorrow-Night.vim > colors/tomorrow-night.vim"
-end
+plugin "tomorrow-night", "https://github.com/ChrisKempson/Vim-Tomorrow-Theme.git"
 
-vim_plugin_task "nerdtree_command-t" do
+plugin "nerdtree_command-t" do
+  mkdir_p "after/plugin"
   File.open("after/plugin/nerdtree_command-t.vim", "w") do |f|
     f.puts <<-HACK
 " NERDTree and Command-T compatibility hack
@@ -118,8 +89,8 @@ end
 
 # disable formatoptions "o" to disallow comment continuation
 # in various ftplugin that enable it
-vim_plugin_task "fo_minus_o" do
-  Dir.mkdir "after/ftplugin" unless File.directory?("after/ftplugin")
+plugin "fo_minus_o" do
+  mkdir_p "after/ftplugin"
   %w(ruby vim coffee gitconfig).each do |filetype|
     File.open("after/ftplugin/#{filetype}.vim", "w+") do |f|
       f.puts <<-vim
